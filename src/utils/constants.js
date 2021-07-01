@@ -1,0 +1,1 @@
+export const api = 'https://api-dev.metadefender.com/v4';
