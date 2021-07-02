@@ -1,6 +1,7 @@
 # OPSWAT Test Task
 
 ## Requirements
+
 Create a web application that will query the Metadefender Cloud REST API hash result and display the results.
 
 The page should contain a form with the following elements:
@@ -27,15 +28,30 @@ REST API Apikey : 87924b41f615554eeb367230b4f0cbbe
 
 File hash: 6D91B2F134D8D8D955F6BFC024A5D2B6CFE6BB36C4AE0E65BA33DAB2D2E5C529
 
-
 ## Installation
 
 1. Clone this project.
 2. Then type in console:
+
 ```bash
 yarn
 ```
-3. And type in console
+
+4. Then type in console
+
+```bash
+cd api/
+```
+
+5. Then
+
+```bash
+node server
+```
+
+6. Open new window in terminal and open root project
+7. And type in console
+
 ```bash
 yarn start
 ```
@@ -49,4 +65,10 @@ But you can change it however you want.
 Also some words about field 'ENDPOINT':
 
 It works with values of two types of values. For example if you wish to write endpoint 'hash' - you be able to write it as
-```https://api-dev.metadefender.com/v4/hash``` or ```hash```
+`https://api-dev.metadefender.com/v4/hash` or `hash`
+
+## About Back End
+
+The problem of CORS solved.
+
+This code can be upgraded in many ways like splitting code, adding dotenv file, https, security, etc. If it's needed - please write full requirements to back-end side.
