@@ -1,1 +1,1 @@
-export const api = 'https://api-dev.metadefender.com/v4';
+export const api = 'http://localhost:8080/getData?';

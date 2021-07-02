@@ -42,83 +42,68 @@ const Form = ({ onSaveResponseData, switchView }) => {
 
   
   const onSearch = useCallback(async () => {
-    const apiKeyStatus = await fetch(`${api}/apikey/`, {
-      headers: {
-        Apikey: apiKey,
-      },
-    })
-      .then(({ status }) => status)
-      .catch(error => console.log(error));
+    
+    const apiKeyStatus = await fetch(api + new URLSearchParams({
+      apiKey,
+      endpoint,
+      fileHash,
+    })).then((data) => data.json());
 
-    if (apiKeyStatus === 200) {
-      let url = '';
-      if (!endpoint.indexOf(api)) {
-        url = `${endpoint}/${fileHash}`;
-      } else {
-        url = `${api}/${endpoint}/${fileHash}/`
-      }
-
-      const fileData = await fetch(url, {
-        headers: {
-          Apikey: apiKey,
-        },
-      })
-        .then((data) => data.json())
-        .catch(error => console.log(error));
-
-      if (!fileData.error) {
-        const {
-          file_info: {
-            file_size,
-            md5,
-            sha1,
-            sha256,
-            upload_timestamp,
-            file_type_extension,
-            file_type_category,
-          },
-          scan_results: {
-            start_time,
-            total_time,
-          }
-        } = fileData;
-
-        onSaveResponseData({
-          sha256,
-          sha1,
+    if (!apiKeyStatus.error) {
+      const {
+        file_info: {
+          file_size,
           md5,
-          'Uploaded time': moment(upload_timestamp).format('Do MMM YYYY HH:mm:ss'),
-          'Scanned time (started time)': moment(start_time).format('Do MMM YYYY HH:mm:ss'),
-          'Scan Duration': msToMinutesAndSeconds(total_time),
-          'File type': file_type_category,
-          'File extension': file_type_extension,
-          'File size': formatBytes(file_size),
-        })
-        switchView();
-      }
+          sha1,
+          sha256,
+          upload_timestamp,
+          file_type_extension,
+          file_type_category,
+        },
+        scan_results: {
+          start_time,
+          total_time,
+        }
+      } = apiKeyStatus;
+
+      onSaveResponseData({
+        sha256,
+        sha1,
+        md5,
+        'Uploaded time': moment(upload_timestamp).format('Do MMM YYYY HH:mm:ss'),
+        'Scanned time (started time)': moment(start_time).format('Do MMM YYYY HH:mm:ss'),
+        'Scan Duration': msToMinutesAndSeconds(total_time),
+        'File type': file_type_category,
+        'File extension': file_type_extension,
+        'File size': formatBytes(file_size),
+      })
+      switchView();
     } else {
       setIsApiValid(false);
     }
   }, [apiKey, endpoint, fileHash, onSaveResponseData, switchView]);
 
   return (
-    <form className={classes.root} noValidate autoComplete="off">
-      <FormControl>
-        <InputLabel htmlFor="component-simple">REST API Endpoint</InputLabel>
-        <Input id="component-simple" value={endpoint} onChange={onEndpointChange} />
-      </FormControl>
-      <FormControl>
-        <InputLabel htmlFor="component-simple" error={!isApiValid}>REST API Apikey</InputLabel>
-        <Input id="component-simple" value={apiKey} onChange={onApiKeyChange} />
-      </FormControl>
-      <FormControl>
-        <InputLabel htmlFor="component-simple">File Hash string</InputLabel>
-        <Input id="component-simple" value={fileHash} onChange={onFileHashChange} />
-      </FormControl>
-      <StyledButton variant="contained" color="primary" disabled={!(endpoint && apiKey && fileHash && isApiValid)} onClick={onSearch}>
-        Search
-      </StyledButton>
-    </form>
+    <>
+      <form className={classes.root} noValidate autoComplete="off">
+        <FormControl>
+          <InputLabel htmlFor="component-simple">REST API Endpoint</InputLabel>
+          <Input id="component-simple" value={endpoint} onChange={onEndpointChange} />
+        </FormControl>
+        <FormControl>
+          <InputLabel htmlFor="component-simple" error={!isApiValid}>REST API Apikey</InputLabel>
+          <Input id="component-simple" value={apiKey} onChange={onApiKeyChange} />
+        </FormControl>
+        <FormControl>
+          <InputLabel htmlFor="component-simple">File Hash string</InputLabel>
+          <Input id="component-simple" value={fileHash} onChange={onFileHashChange} />
+        </FormControl>
+        <StyledButton variant="contained" color="primary" disabled={!(endpoint && apiKey && fileHash && isApiValid)} onClick={onSearch}>
+          Search
+        </StyledButton>
+      </form>
+      {!isApiValid && <WarningMsg>Api key in not valid, please try another one</WarningMsg>}
+    </>
   );
 }
 
@@ -126,4 +111,9 @@ export default Form;
 
 const StyledButton = styled(Button)`
   height: 50px;
+`
+
+const WarningMsg = styled('div')`
+  color: red;
+
 `
